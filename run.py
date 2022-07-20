@@ -52,16 +52,6 @@ def validate_data(values):
     return True
 
 
-def update_sales_worksheet(data):
-    """
-    Update sales worksheet, add new row
-    """
-    print("Updating sales worksheet ...\n")
-    sales_worksheet = SHEET.worksheet('sales')
-    sales_worksheet.append_row(data)
-    print("Sales worksheet updated successfully.\n")
-
-
 def calculate_surplus(sales_row):
     """
     Compare sales with stock and calculate the surplus for each item type.
@@ -77,14 +67,43 @@ def calculate_surplus(sales_row):
     return surplus_data
 
 
-def update_surplus_worksheet(surplus_data):
+def update_worksheet(data, worksheet):
     """
-    Update surplus worksheet, add new row
+    Update worksheet, add new row
     """
-    print("Updating surplus worksheet ...\n")
-    sales_worksheet = SHEET.worksheet('surplus')
-    sales_worksheet.append_row(surplus_data)
-    print("Surplus worksheet updated successfully.\n")
+    print(f"Updating {worksheet} worksheet ...\n")
+    worksheet_to_update = SHEET.worksheet(worksheet)
+    worksheet_to_update.append_row(data)
+    print(f"{worksheet} worksheet updated successfully.\n")
+
+
+def get_last_5_entries_sales():
+    """
+    Collect collumns of data from sales worksheet, returns list of lists.
+    """
+    sales = SHEET.worksheet("sales")
+    columns = []
+    for ind in range(1, 7):
+        column = sales.col_values(ind)
+        columns.append(column[-5:])
+
+    return columns
+
+
+def calculate_stock_data(data):
+    """
+    Calculate the average
+    """
+    print("Calculating stock data...\n")
+    new_stock_data = []
+
+    for column in data:
+        int_column = [int(num) for num in column]
+        avrg = sum(int_column)/len(int_column)
+        stock_num = avrg * 1.1
+        new_stock_data.append(round(stock_num))
+
+    return new_stock_data
 
 
 def main():
@@ -93,9 +112,12 @@ def main():
     """
     data = get_sales_data()
     sales_data = [int(num) for num in data]
-    update_sales_worksheet(sales_data)
+    update_worksheet(sales_data, "sales")
     new_surplus_data = calculate_surplus(sales_data)
-    update_surplus_worksheet(new_surplus_data)
+    update_worksheet(new_surplus_data, "surplus")
+    sales_columns = get_last_5_entries_sales()
+    stock_data = calculate_stock_data(sales_columns)
+    update_worksheet(stock_data, "stock")
 
 
 print("Welcome to Love Sandwiches data automation")
