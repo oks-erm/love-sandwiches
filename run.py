@@ -7,8 +7,8 @@ SCOPE = [
     "https://www.googleapis.com/auth/drive"
     ]
 
-CRED = Credentials.from_service_account_file('cred.json')
-SCOPED_CRED = CRED.with_scopes(SCOPE)
+CREDS = Credentials.from_service_account_file('cred.json')
+SCOPED_CRED = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CRED)
 SHEET = GSPREAD_CLIENT.open('love_sandwiches')
 
